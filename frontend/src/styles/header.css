@@ -1,0 +1,89 @@
+.main-header {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+.header-logo {
+  color: #e91e63;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.header-menu {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.header-menu a {
+  color: white;
+  font-size: 15px;
+  padding-bottom: 5px;
+}
+
+.header-menu a.active {
+  border-bottom: 2px solid #e91e63;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon {
+  position: relative;
+  color: white;
+  font-size: 25px;
+  display: flex;
+}
+
+.bell-icon span {
+  width: 8px;
+  height: 8px;
+  background: #ff3434;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 16px;
+}
+
+.user-circle {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ddd;
+  font-size: 23px;
+}
+
+.logout-button {
+  background: transparent;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 22px;
+  display: flex;
+}
+
+.logout-button:hover {
+  color: #e91e63;
+}

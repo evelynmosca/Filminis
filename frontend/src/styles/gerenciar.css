@@ -1,0 +1,176 @@
+.gerenciar-page {
+  min-height: 100vh;
+  background: #211f20;
+  color: white;
+  padding: 18px 32px 60px;
+}
+
+.gerenciar-top {
+  margin-top: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gerenciar-title {
+  color: #d4145a;
+  font-size: 42px;
+  font-weight: 400;
+}
+
+.gerenciar-add-button {
+  border: none;
+  background: #d4145a;
+  color: white;
+
+  height: 46px;
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.gerenciar-search {
+  margin-top: 42px;
+
+  width: 520px;
+  height: 42px;
+
+  background: #454545;
+
+  border-radius: 8px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 14px;
+}
+
+.gerenciar-search svg {
+  color: #ddd;
+  font-size: 21px;
+}
+
+.gerenciar-search input {
+  width: 100%;
+
+  background: transparent;
+  border: none;
+  outline: none;
+
+  margin-left: 12px;
+
+  color: white;
+}
+
+.gerenciar-list {
+  margin-top: 44px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.gerenciar-card {
+  width: 100%;
+  min-height: 260px;
+
+  background: #050505;
+
+  border-radius: 22px;
+
+  overflow: hidden;
+
+  display: flex;
+}
+
+.gerenciar-poster {
+  width: 250px;
+  object-fit: cover;
+}
+
+.gerenciar-info {
+  flex: 1;
+
+  padding: 34px 34px 28px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.gerenciar-info h2 {
+  font-size: 42px;
+  font-weight: 400;
+}
+
+.gerenciar-meta {
+  margin-top: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  color: #aaa;
+}
+
+.gerenciar-meta svg {
+  font-size: 14px;
+}
+
+.gerenciar-sinopse {
+  margin-top: 22px;
+
+  color: #ddd;
+
+  line-height: 1.5;
+
+  max-width: 900px;
+}
+
+.gerenciar-actions {
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.edit-button,
+.delete-button {
+  height: 42px;
+
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.edit-button {
+  border: 1px solid #777;
+  color: white;
+}
+
+.delete-button {
+  border: 1px solid #ff3c3c;
+  color: #ff3c3c;
+}
+
+.edit-button:hover {
+  background: #1f1f1f;
+}
+
+.delete-button:hover {
+  background: rgba(255, 0, 0, 0.08);
+}

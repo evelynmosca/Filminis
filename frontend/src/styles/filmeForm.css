@@ -1,0 +1,249 @@
+.filme-form-page {
+  min-height: 100vh;
+  background: #211f20;
+  color: white;
+  padding: 18px 32px 60px;
+}
+
+.filme-form-top {
+  margin-top: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filme-form-top h1 {
+  color: #d4145a;
+  font-size: 31px;
+  font-weight: 400;
+}
+
+.form-top-button {
+  background: #d4145a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  cursor: pointer;
+}
+
+.filme-form {
+  margin: 42px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+.form-card {
+  background: #09090a;
+  border-radius: 18px;
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 36px;
+}
+
+.form-card label {
+  color: white;
+  font-size: 13px;
+}
+
+.form-card input,
+.form-card select,
+.form-card textarea {
+  width: 100%;
+  background: black;
+  color: white;
+  border: 1px solid #777;
+  border-radius: 8px;
+  padding: 12px;
+  outline: none;
+}
+
+.form-card textarea {
+  height: 100px;
+  resize: none;
+}
+
+.form-card select option {
+  background: #111;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 90px;
+}
+
+.save-button,
+.remove-button {
+  background: transparent;
+  border-radius: 8px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.save-button {
+  border: 1px solid #00a83b;
+  color: #00c94d;
+}
+
+.remove-button {
+  border: 1px solid #ff2b2b;
+  color: #ff2b2b;
+}
+
+.form-title-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.back-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #555;
+  background: transparent;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 18px;
+}
+
+.back-button:hover {
+  border-color: #d4145a;
+  color: #d4145a;
+}
+
+.adicionar-layout {
+  width: min(1120px, 100%);
+  margin: 36px auto 0;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.poster-card {
+  height: 360px;
+  background: #050505;
+  border-radius: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 150px;
+  margin-top: 41px; 
+}
+
+.poster-button {
+  border: none;
+  background: #d4145a;
+  color: white;
+  border-radius: 9px;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.poster-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.poster-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.poster-modal {
+  width: 430px;
+  background: #09090a;
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  color: white;
+}
+
+.poster-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.poster-modal h2 {
+  color: #d4145a;
+  font-size: 24px;
+  margin-bottom: 22px;
+}
+
+.poster-modal input {
+  width: 100%;
+  background: black;
+  color: white;
+  border: 1px solid #777;
+  border-radius: 8px;
+  padding: 12px;
+  outline: none;
+}
+
+.poster-modal-preview {
+  margin-top: 20px;
+  height: 330px;
+  background: #111;
+  border-radius: 14px;
+  border: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+  overflow: hidden;
+}
+
+.poster-modal-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poster-confirm-button {
+  margin-top: 22px;
+  width: 100%;
+  height: 44px;
+  border: 1px solid #00a83b;
+  background: transparent;
+  color: #00c94d;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}

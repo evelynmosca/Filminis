@@ -1,0 +1,219 @@
+.solicitacoes-page {
+    min-height: 100vh;
+    background: #211f20;
+    color: white;
+    padding: 18px 32px 60px;
+    position: relative;
+}
+
+.solicitacoes-title {
+    margin-top: 46px;
+    color: #d4145a;
+    font-size: 36px;
+    font-weight: 400;
+}
+
+.status-grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 220px);
+    gap: 20px;
+}
+
+.status-card {
+    height: 110px;
+    background: #0a0a0b;
+    border-radius: 18px;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid transparent;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+}
+
+.status-card.active {
+    border-color: #aa0071;
+}
+
+.empty-row {
+    padding: 28px 34px;
+    color: #aaa;
+}
+
+.status-card span {
+    font-size: 14px;
+    color: #ddd;
+}
+
+.status-card strong {
+    display: block;
+    margin-top: 22px;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+.status-card svg {
+    font-size: 26px;
+    color: #aaa;
+}
+
+.status-card .green {
+    color: #00a83b;
+}
+
+.status-card .red {
+    color: #ff2b2b;
+}
+
+.solicitacoes-table {
+    margin-top: 48px;
+    width: 760px;
+    background: #09090a;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.table-header,
+.table-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 40px;
+    align-items: center;
+    padding: 20px 34px;
+}
+
+.table-header {
+    color: #ddd;
+    border-bottom: 1px solid #333;
+}
+
+.table-row {
+    min-height: 68px;
+    border-bottom: 1px solid #2b2b2b;
+    cursor: pointer;
+}
+
+.table-row:hover {
+    background: #141414;
+}
+
+.table-row svg {
+    justify-self: end;
+    font-size: 24px;
+}
+
+.side-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 430px;
+    height: 100vh;
+    background: #211f20;
+    padding: 26px 28px;
+    z-index: 50;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.45);
+    overflow-y: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 22px;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.modal-user-card,
+.modal-changes-card {
+    background: #09090a;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 34px;
+}
+
+.modal-user-card h3,
+.modal-changes-card h3 {
+    font-size: 15px;
+    margin-bottom: 16px;
+}
+
+.modal-user-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.modal-user-icon {
+    width: 42px;
+    height: 42px;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.modal-user-info p {
+    color: #ccc;
+    font-size: 13px;
+}
+
+.addition-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.addition-fields div {
+    border: 1px solid #777;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.addition-fields span {
+    display: block;
+    padding: 10px 12px;
+    border-bottom: 1px solid #333;
+    font-size: 14px;
+}
+
+.addition-fields p {
+    padding: 10px 12px;
+    color: #ddd;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.modal-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 18px;
+}
+
+.decline-button,
+.approve-button {
+    flex: 1;
+    height: 42px;
+    border-radius: 9px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+.decline-button {
+    border: 1px solid #b51d1d;
+    color: #ff3d3d;
+}
+
+.approve-button {
+    border: 1px solid #168b32;
+    color: #32d654;
+}
