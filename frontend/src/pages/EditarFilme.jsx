@@ -160,6 +160,27 @@ function EditarFilme() {
     carregarDados()
   }, [id])
 
+  function formatarDuracao(valor) {
+    const numeros = valor.replace(/\D/g, '').slice(0, 4)
+
+    if (numeros.length <= 2) {
+      return numeros
+    }
+
+    const horas = numeros.slice(0, 2)
+    const minutos = numeros.slice(2, 4)
+
+    return `${horas}:${minutos}:00`
+  }
+
+  function formatarOrcamento(valor) {
+    const numeros = valor.replace(/\D/g, '')
+
+    if (!numeros) return ''
+
+    return Number(numeros).toLocaleString('pt-BR')
+  }
+
   return (
     <div className="filme-form-page">
       <Header />
@@ -211,8 +232,13 @@ function EditarFilme() {
               <input
                 name="duracao"
                 value={form.duracao}
-                onChange={handleChange}
-                placeholder="1h 50min"
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    duracao: formatarDuracao(e.target.value)
+                  })
+                }
+                placeholder="01:40:00"
               />
             </div>
 
@@ -272,8 +298,13 @@ function EditarFilme() {
           <input
             name="orcamento"
             value={form.orcamento}
-            onChange={handleChange}
-            placeholder="Orçamento do filme"
+            onChange={(e) =>
+              setForm({
+                ...form,
+                orcamento: formatarOrcamento(e.target.value)
+              })
+            }
+            placeholder="Ex: 260000000"
           />
 
           <label>País</label>

@@ -80,7 +80,26 @@ class FilmeSerializer(serializers.ModelSerializer):
 class SolicitacaoEdicaoSerializer(serializers.ModelSerializer):
     filme_titulo = serializers.CharField(source='filme.titulo', read_only=True)
     usuario_nome = serializers.CharField(source='usuario.username', read_only=True)
+    filme_dados = serializers.SerializerMethodField()
 
     class Meta:
         model = SolicitacaoEdicao
         fields = '__all__'
+
+    def get_filme_dados(self, obj):
+        filme = obj.filme
+
+        return {
+            'titulo': filme.titulo,
+            'ano': filme.ano,
+            'duracao': filme.duracao,
+            'sinopse': filme.sinopse,
+            'poster': filme.poster,
+            'orcamento': str(filme.orcamento) if filme.orcamento else '',
+            'genero': filme.genero.nome if filme.genero else '',
+            'diretor': filme.diretor.nome if filme.diretor else '',
+            'atores': [ator.nome for ator in filme.atores.all()],
+            'produtora': filme.produtora.nome if filme.produtora else '',
+            'pais': filme.pais.nome if filme.pais else '',
+            'linguagem': filme.linguagem.nome if filme.linguagem else '',
+        }

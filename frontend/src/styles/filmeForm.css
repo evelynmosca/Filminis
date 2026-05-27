@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: #211f20;
   color: white;
-  padding: 18px 32px 60px;
+  padding: 18px 24px 60px;
 }
 
 .filme-form-top {
@@ -28,16 +28,18 @@
 }
 
 .filme-form {
+  width: 100%;
+  max-width: 1280px;
   margin: 42px auto 0;
   display: flex;
   flex-direction: column;
-  gap: 34px;
+  gap: 28px;
 }
 
 .form-card {
   background: #09090a;
   border-radius: 18px;
-  padding: 34px;
+  padding: 28px 30px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -64,6 +66,7 @@
   border-radius: 8px;
   padding: 12px;
   outline: none;
+  font-size: 14px;
 }
 
 .form-card textarea {
@@ -129,11 +132,12 @@
 }
 
 .adicionar-layout {
-  width: min(1120px, 100%);
+  width: 100%;
+  max-width: 1280px;
   margin: 36px auto 0;
   display: grid;
   grid-template-columns: 240px 1fr;
-  gap: 18px;
+  gap: 26px;
   align-items: flex-start;
 }
 

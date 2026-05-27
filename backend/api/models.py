@@ -64,6 +64,16 @@ class Filme(models.Model):
     criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
 
+    status_solicitacao = models.CharField(
+    max_length=20,
+    choices=[
+        ('PENDENTE', 'Pendente'),
+        ('APROVADA', 'Aprovada'),
+        ('DECLINADA', 'Declinada'),
+    ],
+    default='PENDENTE'
+)
+
     def __str__(self):
         return self.titulo
 
@@ -72,6 +82,7 @@ class SolicitacaoEdicao(models.Model):
     filme = models.ForeignKey(Filme, on_delete=models.CASCADE)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     dados_novos = models.JSONField()
+    dados_antigos = models.JSONField(blank=True, null=True)
     aprovado = models.BooleanField(default=False)
     recusado = models.BooleanField(default=False)
     criado_em = models.DateTimeField(auto_now_add=True)

@@ -98,11 +98,9 @@
   background: #080809;
   border-radius: 20px;
   padding: 26px 30px;
-
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 22px;
-
   width: 100%;
 }
 

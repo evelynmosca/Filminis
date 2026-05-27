@@ -36,6 +36,34 @@ function AdicionarFilme() {
     })
   }
 
+  function formatarDuracao(valor) {
+    const numeros = valor.replace(/\D/g, '').slice(0, 4)
+
+    if (!numeros) return ''
+
+    if (numeros.length <= 2) {
+      return numeros
+    }
+
+    const horas = numeros.slice(0, 2)
+    const minutos = numeros.slice(2, 4)
+
+    return `${horas}:${minutos}:00`
+  }
+
+  function formatarOrcamento(valor) {
+    const numeros = valor.replace(/\D/g, '')
+
+    if (!numeros) return ''
+
+    return Number(numeros).toLocaleString('pt-BR')
+  }
+
+  function limparOrcamento(valor) {
+    const numeros = String(valor).replace(/\D/g, '')
+    return numeros || null
+  }
+
   function abrirPopupPoster() {
     setPosterUrl(form.poster || '')
     setMostrarPopup(true)
@@ -98,7 +126,7 @@ function AdicionarFilme() {
       duracao: form.duracao,
       sinopse: form.sinopse,
       poster: form.poster,
-      orcamento: form.orcamento || null,
+      orcamento: limparOrcamento(form.orcamento),
       genero: form.genero,
       diretor: diretorId,
       produtora: produtoraId,
@@ -124,7 +152,9 @@ function AdicionarFilme() {
 
       navigate('/gerenciar')
     } catch (error) {
+      console.log('ERRO DO BACKEND:', error.response?.data)
       console.log(error)
+
       alert('Erro ao adicionar filme.')
     }
   }
@@ -175,44 +205,96 @@ function AdicionarFilme() {
         <div className="filme-form adicionar-form">
           <section className="form-card">
             <label>Título</label>
-            <input name="titulo" value={form.titulo} onChange={handleChange} placeholder="Nome do filme" required />
+            <input
+              name="titulo"
+              value={form.titulo}
+              onChange={handleChange}
+              placeholder="Nome do filme"
+              required
+            />
 
             <div className="form-grid">
               <div>
                 <label>Ano</label>
-                <input name="ano" value={form.ano} onChange={handleChange} placeholder="2008" required />
+                <input
+                  name="ano"
+                  value={form.ano}
+                  onChange={handleChange}
+                  placeholder="2008"
+                  required
+                />
               </div>
 
               <div>
                 <label>Produtora</label>
-                <input name="produtora" value={form.produtora} onChange={handleChange} placeholder="Warner" />
+                <input
+                  name="produtora"
+                  value={form.produtora}
+                  onChange={handleChange}
+                  placeholder="Warner"
+                />
               </div>
 
               <div>
                 <label>Idioma</label>
-                <input name="linguagem" value={form.linguagem} onChange={handleChange} placeholder="Inglês" />
+                <input
+                  name="linguagem"
+                  value={form.linguagem}
+                  onChange={handleChange}
+                  placeholder="Inglês"
+                />
               </div>
 
               <div>
                 <label>País</label>
-                <input name="pais" value={form.pais} onChange={handleChange} placeholder="Inglaterra" />
+                <input
+                  name="pais"
+                  value={form.pais}
+                  onChange={handleChange}
+                  placeholder="Inglaterra"
+                />
               </div>
 
               <div>
                 <label>Duração</label>
-                <input name="duracao" value={form.duracao} onChange={handleChange} placeholder="1h 50min" />
+                <input
+                  name="duracao"
+                  value={form.duracao}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      duracao: formatarDuracao(e.target.value)
+                    })
+                  }
+                  placeholder="01:40:00"
+                />
               </div>
 
               <div>
                 <label>Orçamento</label>
-                <input name="orcamento" value={form.orcamento} onChange={handleChange} placeholder="37000000" />
+                <input
+                  name="orcamento"
+                  value={form.orcamento}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      orcamento: formatarOrcamento(e.target.value)
+                    })
+                  }
+                  placeholder="Ex: 260000000"
+                />
               </div>
             </div>
           </section>
 
           <section className="form-card">
             <label>Gênero</label>
-            <select name="genero" value={form.genero} onChange={handleChange} required>
+            <select
+              name="genero"
+              value={form.genero}
+              onChange={handleChange}
+              required
+            >
               <option value="">Escolher gênero</option>
 
               {generos.map((genero) => (
@@ -225,15 +307,31 @@ function AdicionarFilme() {
 
           <section className="form-card">
             <label>Diretor</label>
-            <input name="diretor" value={form.diretor} onChange={handleChange} placeholder="Diretor do filme" />
+            <input
+              name="diretor"
+              value={form.diretor}
+              onChange={handleChange}
+              placeholder="Diretor do filme"
+            />
 
             <label>Elenco</label>
-            <textarea name="atores" value={form.atores} onChange={handleChange} placeholder="Ex: Ator 1, Ator 2, Ator 3" />
+            <textarea
+              name="atores"
+              value={form.atores}
+              onChange={handleChange}
+              placeholder="Ex: Ator 1, Ator 2, Ator 3"
+            />
           </section>
 
           <section className="form-card">
             <label>Sinopse</label>
-            <textarea name="sinopse" value={form.sinopse} onChange={handleChange} placeholder="Sinopse do filme" required />
+            <textarea
+              name="sinopse"
+              value={form.sinopse}
+              onChange={handleChange}
+              placeholder="Sinopse do filme"
+              required
+            />
           </section>
 
           <div className="form-actions">

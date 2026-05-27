@@ -119,7 +119,7 @@ function GerenciarFilmes() {
               </div>
 
               <p className="gerenciar-sinopse">
-                {filme.sinopse?.slice(0, 180)}
+                {filme.sinopse || 'Sem sinopse cadastrada'}
               </p>
 
               <div className="gerenciar-actions">

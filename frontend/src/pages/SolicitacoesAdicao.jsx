@@ -21,7 +21,7 @@ function SolicitacoesAdicao() {
 
   async function carregarSolicitacoes() {
     try {
-      const response = await api.get('filmes/pendentes/')
+      const response = await api.get('filmes/solicitacoes_adicao/')
       setFilmes(response.data)
     } catch (error) {
       console.log(error)
@@ -52,14 +52,47 @@ function SolicitacoesAdicao() {
     }
   }
 
+  function statusTexto(item) {
+    if (item.status_solicitacao === 'APROVADA') return 'Aprovada'
+    if (item.status_solicitacao === 'DECLINADA') return 'Declinada'
+    return 'Pendente'
+  }
+
+  function contarPendentes() {
+    return filmes.filter((item) => item.status_solicitacao === 'PENDENTE').length
+  }
+
+  function contarAprovadas() {
+    return filmes.filter((item) => item.status_solicitacao === 'APROVADA').length
+  }
+
+  function contarDeclinadas() {
+    return filmes.filter((item) => item.status_solicitacao === 'DECLINADA').length
+  }
+
+  function filtrarFilmes() {
+    if (filtroStatus === 'todas') return filmes
+
+    if (filtroStatus === 'pendentes') {
+      return filmes.filter((item) => item.status_solicitacao === 'PENDENTE')
+    }
+
+    if (filtroStatus === 'aprovadas') {
+      return filmes.filter((item) => item.status_solicitacao === 'APROVADA')
+    }
+
+    if (filtroStatus === 'declinadas') {
+      return filmes.filter((item) => item.status_solicitacao === 'DECLINADA')
+    }
+
+    return filmes
+  }
+
   useEffect(() => {
     carregarSolicitacoes()
   }, [])
 
-  const filmesFiltrados =
-    filtroStatus === 'pendentes' || filtroStatus === 'todas'
-      ? filmes
-      : []
+  const filmesFiltrados = filtrarFilmes()
 
   return (
     <div className="solicitacoes-page">
@@ -87,7 +120,7 @@ function SolicitacoesAdicao() {
         >
           <div>
             <span>PENDENTES</span>
-            <strong>{filmes.length}</strong>
+            <strong>{contarPendentes()}</strong>
           </div>
           <FiClock />
         </button>
@@ -99,7 +132,7 @@ function SolicitacoesAdicao() {
         >
           <div>
             <span>APROVADAS</span>
-            <strong>0</strong>
+            <strong>{contarAprovadas()}</strong>
           </div>
           <FiCheckCircle className="green" />
         </button>
@@ -111,7 +144,7 @@ function SolicitacoesAdicao() {
         >
           <div>
             <span>DECLINADAS</span>
-            <strong>0</strong>
+            <strong>{contarDeclinadas()}</strong>
           </div>
           <FiXCircle className="red" />
         </button>
@@ -134,7 +167,7 @@ function SolicitacoesAdicao() {
             >
               <span>{filme.titulo}</span>
               <span>{filme.criado_por_nome || 'Usuário'}</span>
-              <span>Pendente</span>
+              <span>{statusTexto(filme)}</span>
               <FiChevronRight />
             </div>
           ))
@@ -226,23 +259,25 @@ function SolicitacoesAdicao() {
             </div>
           </div>
 
-          <div className="modal-actions">
-            <button
-              className="decline-button"
-              onClick={() => recusarFilme(selecionado.id)}
-            >
-              <FiX />
-              Declinar alterações
-            </button>
+          {selecionado.status_solicitacao === 'PENDENTE' && (
+            <div className="modal-actions">
+              <button
+                className="decline-button"
+                onClick={() => recusarFilme(selecionado.id)}
+              >
+                <FiX />
+                Declinar alterações
+              </button>
 
-            <button
-              className="approve-button"
-              onClick={() => aprovarFilme(selecionado.id)}
-            >
-              <FiCheck />
-              Aprovar alterações
-            </button>
-          </div>
+              <button
+                className="approve-button"
+                onClick={() => aprovarFilme(selecionado.id)}
+              >
+                <FiCheck />
+                Aprovar alterações
+              </button>
+            </div>
+          )}
         </aside>
       )}
     </div>

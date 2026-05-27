@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiUser, FiLock } from 'react-icons/fi'
+import { BiCameraMovie } from 'react-icons/bi'
 import api from '../services/api'
 import '../styles/login.css'
 
@@ -59,7 +60,8 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-container">
-        <div className="login-logo">
+        <div className="login-logo cinema-logo">
+          <BiCameraMovie />
           <h1>FILMINIS</h1>
         </div>
 
