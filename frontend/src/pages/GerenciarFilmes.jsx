@@ -55,6 +55,25 @@ function GerenciarFilmes() {
     carregarFilmes()
   }, [busca])
 
+  function formatarDuracaoExibicao(duracao) {
+    if (!duracao) return 'Não informado'
+
+    const partes = duracao.split(':')
+
+    if (partes.length >= 2) {
+      const horas = Number(partes[0])
+      const minutos = Number(partes[1])
+
+      if (horas > 0) {
+        return `${horas}h ${minutos}min`
+      }
+
+      return `${minutos}min`
+    }
+
+    return duracao
+  }
+
   return (
     <div className="gerenciar-page">
       <Header />
@@ -114,7 +133,7 @@ function GerenciarFilmes() {
                 <FiClock />
 
                 <span>
-                  {filme.duracao || '2h'}
+                  {formatarDuracaoExibicao(filme.duracao)}
                 </span>
               </div>
 

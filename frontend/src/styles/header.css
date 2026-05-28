@@ -1,4 +1,4 @@
-.main-header {
+.header {
   width: 100%;
   height: 42px;
   display: flex;
@@ -42,7 +42,7 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .notification-wrapper {
@@ -57,7 +57,7 @@
   border: none;
   background: transparent;
   color: #f2f2f2;
-  font-size: 24px;
+  font-size: 23px;
   cursor: pointer;
   position: relative;
   display: flex;
@@ -68,7 +68,7 @@
 .notification-dot {
   position: absolute;
   top: 6px;
-  right: 7px;
+  right: 6px;
   width: 8px;
   height: 8px;
   background: #ff2a6d;
@@ -77,22 +77,18 @@
 
 .notification-dropdown {
   position: absolute;
-  top: 42px;
+  top: 44px;
   right: 0;
   width: 240px;
   background: #0b0b0c;
   border: 1px solid #2d2d2d;
   border-radius: 14px;
   padding: 10px;
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 8px;
-  z-index: 100;
+  z-index: 999;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
-}
-
-.notification-wrapper:hover .notification-dropdown {
-  display: flex;
 }
 
 .notification-dropdown button {
@@ -116,9 +112,10 @@
 .header-user {
   display: flex;
   align-items: center;
-  gap: 9px;
-  font-size: 16px;
+  gap: 8px;
   color: white;
+  font-size: 16px;
+  white-space: nowrap;
 }
 
 .user-circle {
@@ -134,15 +131,19 @@
 }
 
 .logout-button {
+  width: 36px;
+  height: 36px;
   background: transparent;
   border: none;
   color: #ccc;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 23px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-.logout-button:hover {
+.logout-button:hover,
+.notification-button:hover {
   color: #e91e63;
 }

@@ -19,11 +19,21 @@ function SolicitacoesEdicao() {
   const [solicitacoes, setSolicitacoes] = useState([])
   const [selecionada, setSelecionada] = useState(null)
   const [filtroStatus, setFiltroStatus] = useState('pendentes')
+  const [atores, setAtores] = useState([])
 
   async function carregarSolicitacoes() {
     try {
       const response = await api.get('solicitacoes-edicao/')
       setSolicitacoes(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function carregarAtores() {
+    try {
+      const response = await api.get('atores/')
+      setAtores(response.data)
     } catch (error) {
       console.log(error)
     }
@@ -59,7 +69,79 @@ function SolicitacoesEdicao() {
     return 'Pendente'
   }
 
-  function normalizarValor(valor) {
+  function nomesAtoresPorIds(ids) {
+    if (!Array.isArray(ids)) {
+      return ids || 'Não informado'
+    }
+
+    return ids
+      .map((id) => {
+        const ator = atores.find((item) => Number(item.id) === Number(id))
+        return ator ? ator.nome : id
+      })
+      .join(', ')
+  }
+
+  function normalizarDuracao(valor) {
+    if (!valor) return ''
+
+    const texto = String(valor)
+      .toLowerCase()
+      .replace(/\s/g, '')
+      .replace('horas', 'h')
+      .replace('hora', 'h')
+      .replace('minutos', 'min')
+      .replace('minuto', 'min')
+
+    if (texto.includes(':')) {
+      const partes = texto.split(':')
+      const horas = Number(partes[0]) || 0
+      const minutos = Number(partes[1]) || 0
+
+      return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:00`
+    }
+
+    if (texto.includes('h')) {
+      const partes = texto.split('h')
+      const horas = Number(partes[0]) || 0
+      const minutos = Number(partes[1]?.replace(/\D/g, '')) || 0
+
+      return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:00`
+    }
+
+    return texto
+  }
+
+  function normalizarOrcamento(valor) {
+    if (valor === null || valor === undefined || valor === '') return ''
+
+    return String(valor)
+      .replace('R$', '')
+      .replace('US$', '')
+      .replace(/\./g, '')
+      .replace(/,/g, '')
+      .replace(/\s/g, '')
+      .replace(/\.00$/, '')
+      .trim()
+  }
+
+  function normalizarValor(valor, chave) {
+    if (chave === 'duracao') {
+      return normalizarDuracao(valor)
+    }
+
+    if (chave === 'orcamento') {
+      return normalizarOrcamento(valor)
+    }
+
+    if (chave === 'atores') {
+      if (Array.isArray(valor)) {
+        return valor.map(String).join(', ')
+      }
+
+      return valor ? String(valor).trim() : ''
+    }
+
     if (Array.isArray(valor)) {
       return valor.map(String).join(', ')
     }
@@ -75,6 +157,11 @@ function SolicitacoesEdicao() {
     const dadosAntigos = item?.dados_antigos || item?.filme_dados
     const valor = dadosAntigos?.[chave]
 
+    if (chave === 'atores') {
+      if (Array.isArray(valor)) return valor.join(', ')
+      return valor || 'Não informado'
+    }
+
     if (Array.isArray(valor)) {
       return valor.join(', ')
     }
@@ -88,6 +175,10 @@ function SolicitacoesEdicao() {
 
   function valorDepois(item, chave) {
     const valor = item?.dados_novos?.[chave]
+
+    if (chave === 'atores') {
+      return nomesAtoresPorIds(valor)
+    }
 
     if (Array.isArray(valor)) {
       return valor.join(', ')
@@ -108,7 +199,6 @@ function SolicitacoesEdicao() {
     const campos = [
       { chave: 'titulo', label: 'Título' },
       { chave: 'ano', label: 'Ano' },
-      { chave: 'duracao', label: 'Duração' },
       { chave: 'sinopse', label: 'Sinopse' },
       { chave: 'poster', label: 'Poster' },
       { chave: 'orcamento', label: 'Orçamento' },
@@ -125,8 +215,8 @@ function SolicitacoesEdicao() {
 
       if (!depoisExiste) return false
 
-      const antes = normalizarValor(dadosAntigos[campo.chave])
-      const depois = normalizarValor(item.dados_novos[campo.chave])
+      const antes = normalizarValor(dadosAntigos[campo.chave], campo.chave)
+      const depois = normalizarValor(item.dados_novos[campo.chave], campo.chave)
 
       return depois !== '' && antes !== depois
     })
@@ -164,6 +254,7 @@ function SolicitacoesEdicao() {
 
   useEffect(() => {
     carregarSolicitacoes()
+    carregarAtores()
   }, [])
 
   const solicitacoesFiltradas = filtrarSolicitacoes()

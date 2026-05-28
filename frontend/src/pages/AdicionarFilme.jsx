@@ -30,32 +30,33 @@ function AdicionarFilme() {
   })
 
   function handleChange(e) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    })
+    setForm({ ...form, [e.target.name]: e.target.value })
   }
 
   function formatarDuracao(valor) {
     const numeros = valor.replace(/\D/g, '').slice(0, 4)
 
-    if (!numeros) return ''
+    if (numeros.length === 0) return ''
 
     if (numeros.length <= 2) {
       return numeros
     }
 
-    const horas = numeros.slice(0, 2)
-    const minutos = numeros.slice(2, 4)
+    const horas = numeros.slice(0, numeros.length - 2)
+    const minutos = numeros.slice(-2)
 
-    return `${horas}:${minutos}:00`
+    return `${horas}:${minutos}`
+  }
+
+  function duracaoParaBackend(valor) {
+    if (!valor) return null
+    if (!valor.includes(':')) return `${String(valor).padStart(2, '0')}:00:00`
+    return `${valor}:00`
   }
 
   function formatarOrcamento(valor) {
     const numeros = valor.replace(/\D/g, '')
-
     if (!numeros) return ''
-
     return Number(numeros).toLocaleString('pt-BR')
   }
 
@@ -70,11 +71,7 @@ function AdicionarFilme() {
   }
 
   function confirmarPoster() {
-    setForm({
-      ...form,
-      poster: posterUrl
-    })
-
+    setForm({ ...form, poster: posterUrl })
     setMostrarPopup(false)
   }
 
@@ -108,11 +105,7 @@ function AdicionarFilme() {
     const paisId = await buscarOuCriar('paises/', form.pais)
     const linguagemId = await buscarOuCriar('linguagens/', form.linguagem)
 
-    const nomesAtores = form.atores
-      .split(',')
-      .map((ator) => ator.trim())
-      .filter(Boolean)
-
+    const nomesAtores = form.atores.split(',').map((ator) => ator.trim()).filter(Boolean)
     const atoresIds = []
 
     for (const nome of nomesAtores) {
@@ -123,7 +116,7 @@ function AdicionarFilme() {
     return {
       titulo: form.titulo,
       ano: Number(form.ano),
-      duracao: form.duracao,
+      duracao: duracaoParaBackend(form.duracao),
       sinopse: form.sinopse,
       poster: form.poster,
       orcamento: limparOrcamento(form.orcamento),
@@ -141,20 +134,12 @@ function AdicionarFilme() {
 
     try {
       const dados = await prepararDados()
-
       await api.post('filmes/', dados)
 
-      alert(
-        isAdmin
-          ? 'Filme adicionado com sucesso!'
-          : 'Solicitação de adição enviada para aprovação!'
-      )
-
+      alert(isAdmin ? 'Filme adicionado com sucesso!' : 'Solicitação de adição enviada para aprovação!')
       navigate('/gerenciar')
     } catch (error) {
       console.log('ERRO DO BACKEND:', error.response?.data)
-      console.log(error)
-
       alert('Erro ao adicionar filme.')
     }
   }
@@ -169,11 +154,7 @@ function AdicionarFilme() {
 
       <div className="filme-form-top">
         <div className="form-title-area">
-          <button
-            className="back-button"
-            onClick={() => navigate('/gerenciar')}
-            type="button"
-          >
+          <button className="back-button" onClick={() => navigate('/gerenciar')} type="button">
             <FiArrowLeft />
           </button>
 
@@ -184,18 +165,9 @@ function AdicionarFilme() {
       <form className="adicionar-layout" onSubmit={salvar}>
         <div className="poster-card">
           {form.poster ? (
-            <img
-              className="poster-preview"
-              src={form.poster}
-              alt="Poster do filme"
-              onClick={abrirPopupPoster}
-            />
+            <img className="poster-preview" src={form.poster} alt="Poster do filme" onClick={abrirPopupPoster} />
           ) : (
-            <button
-              type="button"
-              className="poster-button"
-              onClick={abrirPopupPoster}
-            >
+            <button type="button" className="poster-button" onClick={abrirPopupPoster}>
               <FiPlus />
               Adicionar poster
             </button>
@@ -205,54 +177,27 @@ function AdicionarFilme() {
         <div className="filme-form adicionar-form">
           <section className="form-card">
             <label>Título</label>
-            <input
-              name="titulo"
-              value={form.titulo}
-              onChange={handleChange}
-              placeholder="Nome do filme"
-              required
-            />
+            <input name="titulo" value={form.titulo} onChange={handleChange} placeholder="Nome do filme" required />
 
             <div className="form-grid">
               <div>
                 <label>Ano</label>
-                <input
-                  name="ano"
-                  value={form.ano}
-                  onChange={handleChange}
-                  placeholder="2008"
-                  required
-                />
+                <input name="ano" value={form.ano} onChange={handleChange} placeholder="2008" required />
               </div>
 
               <div>
                 <label>Produtora</label>
-                <input
-                  name="produtora"
-                  value={form.produtora}
-                  onChange={handleChange}
-                  placeholder="Warner"
-                />
+                <input name="produtora" value={form.produtora} onChange={handleChange} placeholder="Warner" />
               </div>
 
               <div>
                 <label>Idioma</label>
-                <input
-                  name="linguagem"
-                  value={form.linguagem}
-                  onChange={handleChange}
-                  placeholder="Inglês"
-                />
+                <input name="linguagem" value={form.linguagem} onChange={handleChange} placeholder="Inglês" />
               </div>
 
               <div>
                 <label>País</label>
-                <input
-                  name="pais"
-                  value={form.pais}
-                  onChange={handleChange}
-                  placeholder="Inglaterra"
-                />
+                <input name="pais" value={form.pais} onChange={handleChange} placeholder="Inglaterra" />
               </div>
 
               <div>
@@ -260,13 +205,9 @@ function AdicionarFilme() {
                 <input
                   name="duracao"
                   value={form.duracao}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      duracao: formatarDuracao(e.target.value)
-                    })
-                  }
-                  placeholder="01:40:00"
+                  onChange={(e) => setForm({ ...form, duracao: formatarDuracao(e.target.value) })}
+                  placeholder="01:33"
+                  inputMode="numeric"
                 />
               </div>
 
@@ -275,12 +216,7 @@ function AdicionarFilme() {
                 <input
                   name="orcamento"
                   value={form.orcamento}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      orcamento: formatarOrcamento(e.target.value)
-                    })
-                  }
+                  onChange={(e) => setForm({ ...form, orcamento: formatarOrcamento(e.target.value) })}
                   placeholder="Ex: 260000000"
                 />
               </div>
@@ -289,49 +225,25 @@ function AdicionarFilme() {
 
           <section className="form-card">
             <label>Gênero</label>
-            <select
-              name="genero"
-              value={form.genero}
-              onChange={handleChange}
-              required
-            >
+            <select name="genero" value={form.genero} onChange={handleChange} required>
               <option value="">Escolher gênero</option>
-
               {generos.map((genero) => (
-                <option key={genero.id} value={genero.id}>
-                  {genero.nome}
-                </option>
+                <option key={genero.id} value={genero.id}>{genero.nome}</option>
               ))}
             </select>
           </section>
 
           <section className="form-card">
             <label>Diretor</label>
-            <input
-              name="diretor"
-              value={form.diretor}
-              onChange={handleChange}
-              placeholder="Diretor do filme"
-            />
+            <input name="diretor" value={form.diretor} onChange={handleChange} placeholder="Diretor do filme" />
 
             <label>Elenco</label>
-            <textarea
-              name="atores"
-              value={form.atores}
-              onChange={handleChange}
-              placeholder="Ex: Ator 1, Ator 2, Ator 3"
-            />
+            <textarea name="atores" value={form.atores} onChange={handleChange} placeholder="Ex: Ator 1, Ator 2, Ator 3" />
           </section>
 
           <section className="form-card">
             <label>Sinopse</label>
-            <textarea
-              name="sinopse"
-              value={form.sinopse}
-              onChange={handleChange}
-              placeholder="Sinopse do filme"
-              required
-            />
+            <textarea name="sinopse" value={form.sinopse} onChange={handleChange} placeholder="Sinopse do filme" required />
           </section>
 
           <div className="form-actions">
@@ -346,11 +258,7 @@ function AdicionarFilme() {
       {mostrarPopup && (
         <div className="poster-modal-overlay">
           <div className="poster-modal">
-            <button
-              type="button"
-              className="poster-modal-close"
-              onClick={() => setMostrarPopup(false)}
-            >
+            <button type="button" className="poster-modal-close" onClick={() => setMostrarPopup(false)}>
               <FiX />
             </button>
 
@@ -364,18 +272,10 @@ function AdicionarFilme() {
             />
 
             <div className="poster-modal-preview">
-              {posterUrl ? (
-                <img src={posterUrl} alt="Prévia do poster" />
-              ) : (
-                <span>Prévia do poster</span>
-              )}
+              {posterUrl ? <img src={posterUrl} alt="Prévia do poster" /> : <span>Prévia do poster</span>}
             </div>
 
-            <button
-              type="button"
-              className="poster-confirm-button"
-              onClick={confirmarPoster}
-            >
+            <button type="button" className="poster-confirm-button" onClick={confirmarPoster}>
               <FiCheck />
               Usar este poster
             </button>

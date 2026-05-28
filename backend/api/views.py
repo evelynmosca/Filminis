@@ -1,9 +1,8 @@
+import re
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
-from django.contrib.auth.models import User
-
 from .models import Genero, Diretor, Ator, Produtora, Pais, Linguagem, Filme, SolicitacaoEdicao
 from .serializers import (
     UserSerializer,
@@ -125,6 +124,79 @@ class FilmeViewSet(viewsets.ModelViewSet):
             status_solicitacao='APROVADA' if self.request.user.is_staff else 'PENDENTE'
         )
 
+    def normalizar_texto(self, valor):
+        if valor is None:
+            return ''
+        return str(valor).strip()
+
+    def normalizar_orcamento(self, valor):
+        if valor is None or valor == '':
+            return ''
+
+        valor = str(valor)
+        valor = valor.replace('R$', '').replace('US$', '')
+        valor = valor.replace('.', '').replace(',', '').replace(' ', '')
+
+        try:
+            return str(int(float(valor)))
+        except:
+            return valor
+
+    def normalizar_duracao(self, valor):
+        if not valor:
+            return ''
+
+        valor = str(valor).lower().strip()
+        valor = valor.replace(' ', '')
+        valor = valor.replace('horas', 'h')
+        valor = valor.replace('hora', 'h')
+        valor = valor.replace('minutos', 'min')
+        valor = valor.replace('minuto', 'min')
+
+        horas = 0
+        minutos = 0
+
+        if ':' in valor:
+            partes = valor.split(':')
+            horas = int(re.sub(r'\D', '', partes[0]) or 0)
+
+            if len(partes) > 1:
+                minutos = int(re.sub(r'\D', '', partes[1]) or 0)
+
+        elif 'h' in valor:
+            partes = valor.split('h')
+            horas = int(re.sub(r'\D', '', partes[0]) or 0)
+
+            if len(partes) > 1:
+                minutos = int(re.sub(r'\D', '', partes[1]) or 0)
+
+        else:
+            numeros = re.sub(r'\D', '', valor)
+
+            if len(numeros) >= 3:
+                horas = int(numeros[:-2])
+                minutos = int(numeros[-2:])
+            elif numeros:
+                horas = int(numeros)
+
+        return f'{horas:02d}:{minutos:02d}:00'
+
+    def dados_atuais_filme(self, filme):
+        return {
+            'titulo': filme.titulo,
+            'ano': filme.ano,
+            'duracao': filme.duracao,
+            'sinopse': filme.sinopse,
+            'poster': filme.poster,
+            'orcamento': str(filme.orcamento) if filme.orcamento else '',
+            'genero': filme.genero.nome if filme.genero else '',
+            'diretor': filme.diretor.nome if filme.diretor else '',
+            'atores': list(filme.atores.values_list('nome', flat=True)),
+            'produtora': filme.produtora.nome if filme.produtora else '',
+            'pais': filme.pais.nome if filme.pais else '',
+            'linguagem': filme.linguagem.nome if filme.linguagem else '',
+        }
+
     def update(self, request, *args, **kwargs):
         filme = self.get_object()
 
@@ -137,7 +209,6 @@ class FilmeViewSet(viewsets.ModelViewSet):
         campos_simples = [
             'titulo',
             'ano',
-            'duracao',
             'sinopse',
             'poster',
             'orcamento'
@@ -150,10 +221,22 @@ class FilmeViewSet(viewsets.ModelViewSet):
             valor_novo = dados_recebidos.get(campo)
             valor_atual = getattr(filme, campo)
 
-            if valor_atual is None:
-                valor_atual = ''
+            if campo == 'orcamento':
+                novo_normalizado = self.normalizar_orcamento(valor_novo)
+                atual_normalizado = self.normalizar_orcamento(valor_atual)
 
-            if str(valor_novo).strip() != str(valor_atual).strip():
+            elif campo == 'duracao':
+                novo_normalizado = self.normalizar_duracao(valor_novo)
+                atual_normalizado = self.normalizar_duracao(valor_atual)
+
+                print('DEBUG DURACAO NOVA:', valor_novo, '=>', novo_normalizado)
+                print('DEBUG DURACAO ATUAL:', valor_atual, '=>', atual_normalizado)
+
+            else:
+                novo_normalizado = self.normalizar_texto(valor_novo)
+                atual_normalizado = self.normalizar_texto(valor_atual)
+
+            if novo_normalizado != atual_normalizado:
                 dados_alterados[campo] = valor_novo
 
         relacionamentos = {
@@ -173,13 +256,10 @@ class FilmeViewSet(viewsets.ModelViewSet):
             if valor_novo in ['', None]:
                 valor_novo = None
 
-            if valor_atual is not None:
-                valor_atual = str(valor_atual)
+            valor_atual_str = str(valor_atual) if valor_atual is not None else None
+            valor_novo_str = str(valor_novo) if valor_novo is not None else None
 
-            if valor_novo is not None:
-                valor_novo = str(valor_novo)
-
-            if valor_novo != valor_atual:
+            if valor_novo_str != valor_atual_str:
                 dados_alterados[campo] = dados_recebidos.get(campo)
 
         if 'atores' in dados_recebidos:
@@ -205,22 +285,9 @@ class FilmeViewSet(viewsets.ModelViewSet):
         SolicitacaoEdicao.objects.create(
             filme=filme,
             usuario=request.user,
-            dados_antigos={
-                'titulo': filme.titulo,
-                'ano': filme.ano,
-                'duracao': filme.duracao,
-                'sinopse': filme.sinopse,
-                'poster': filme.poster,
-                'orcamento': str(filme.orcamento) if filme.orcamento else '',
-                'genero': filme.genero.nome if filme.genero else '',
-                'diretor': filme.diretor.nome if filme.diretor else '',
-                'atores': list(filme.atores.values_list('nome', flat=True)),
-                'produtora': filme.produtora.nome if filme.produtora else '',
-                'pais': filme.pais.nome if filme.pais else '',
-                'linguagem': filme.linguagem.nome if filme.linguagem else '',
-            },
+            dados_antigos=self.dados_atuais_filme(filme),
             dados_novos=dados_alterados
-)
+        )
 
         return Response(
             {'mensagem': 'Solicitação de edição enviada para aprovação.'},
@@ -245,28 +312,20 @@ class FilmeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def aprovar(self, request, pk=None):
         filme = self.get_object()
-
         filme.aprovado = True
         filme.status_solicitacao = 'APROVADA'
-
         filme.save()
 
-        return Response({
-            'mensagem': 'Filme aprovado com sucesso.'
-        })
+        return Response({'mensagem': 'Filme aprovado com sucesso.'})
 
-        @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
-        def recusar(self, request, pk=None):
-            filme = self.get_object()
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
+    def recusar(self, request, pk=None):
+        filme = self.get_object()
+        filme.status_solicitacao = 'DECLINADA'
+        filme.save()
 
-            filme.status_solicitacao = 'DECLINADA'
+        return Response({'mensagem': 'Solicitação recusada com sucesso.'})
 
-            filme.save()
-
-            return Response({
-                'mensagem': 'Solicitação recusada com sucesso.'
-            })
-    
     @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
     def solicitacoes_adicao(self, request):
         filmes = Filme.objects.filter(
@@ -278,6 +337,7 @@ class FilmeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(filmes, many=True)
         return Response(serializer.data)
 
+
 class SolicitacaoEdicaoViewSet(viewsets.ModelViewSet):
     queryset = SolicitacaoEdicao.objects.all().order_by('-id')
     serializer_class = SolicitacaoEdicaoSerializer
@@ -287,7 +347,10 @@ class SolicitacaoEdicaoViewSet(viewsets.ModelViewSet):
     def aprovar(self, request, pk=None):
         solicitacao = self.get_object()
         filme = solicitacao.filme
-        dados = solicitacao.dados_novos
+        dados = solicitacao.dados_novos.copy()
+
+        if 'duracao' in dados:
+            dados.pop('duracao')
 
         serializer = FilmeSerializer(filme, data=dados, partial=True)
 

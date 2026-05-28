@@ -1,23 +1,63 @@
+import { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { FiUser, FiLogOut, FiBell } from 'react-icons/fi'
 
+import api from '../services/api'
 import '../styles/header.css'
 
 function Header() {
   const navigate = useNavigate()
+
   const isAdmin = localStorage.getItem('isAdmin') === 'true'
+  const [menuAberto, setMenuAberto] = useState(false)
+  const [temNotificacao, setTemNotificacao] = useState(false)
 
   function logout() {
     localStorage.clear()
     navigate('/')
   }
 
+  async function carregarNotificacoes() {
+    if (!isAdmin) return
+
+    try {
+      const [adicaoResponse, edicaoResponse] = await Promise.all([
+        api.get('filmes/solicitacoes_adicao/'),
+        api.get('solicitacoes-edicao/')
+      ])
+
+      const adicoesPendentes = adicaoResponse.data.filter(
+        (item) => item.status_solicitacao === 'PENDENTE'
+      )
+
+      const edicoesPendentes = edicaoResponse.data.filter(
+        (item) => !item.aprovado && !item.recusado
+      )
+
+      setTemNotificacao(adicoesPendentes.length > 0 || edicoesPendentes.length > 0)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  function irParaSolicitacoesAdicao() {
+    setMenuAberto(false)
+    navigate('/solicitacoes/adicao')
+  }
+
+  function irParaSolicitacoesEdicao() {
+    setMenuAberto(false)
+    navigate('/solicitacoes/edicao')
+  }
+
+  useEffect(() => {
+    carregarNotificacoes()
+  }, [])
+
   return (
-    <header className="main-header">
+    <header className="header">
       <div className="header-left">
-        <NavLink to="/home" className="header-logo">
-          FILMINIS
-        </NavLink>
+        <h1 className="header-logo">FILMINIS</h1>
 
         <nav className="header-menu">
           <NavLink to="/home">Home</NavLink>
@@ -28,26 +68,26 @@ function Header() {
       <div className="header-right">
         {isAdmin && (
           <div className="notification-wrapper">
-            <button type="button" className="notification-button">
+            <button
+              type="button"
+              className="notification-button"
+              onClick={() => setMenuAberto(!menuAberto)}
+            >
               <FiBell />
-              <span className="notification-dot" />
+              {temNotificacao && <span className="notification-dot"></span>}
             </button>
 
-            <div className="notification-dropdown">
-              <button
-                type="button"
-                onClick={() => navigate('/solicitacoes/adicao')}
-              >
-                Solicitações de adição
-              </button>
+            {menuAberto && (
+              <div className="notification-dropdown">
+                <button type="button" onClick={irParaSolicitacoesAdicao}>
+                  Solicitações de adição
+                </button>
 
-              <button
-                type="button"
-                onClick={() => navigate('/solicitacoes/edicao')}
-              >
-                Solicitações de edição
-              </button>
-            </div>
+                <button type="button" onClick={irParaSolicitacoesEdicao}>
+                  Solicitações de edição
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -59,7 +99,7 @@ function Header() {
           <span>{isAdmin ? 'Admin' : 'Usuário'}</span>
         </div>
 
-        <button type="button" className="logout-button" onClick={logout}>
+        <button className="logout-button" onClick={logout}>
           <FiLogOut />
         </button>
       </div>

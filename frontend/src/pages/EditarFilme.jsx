@@ -6,6 +6,7 @@ import {
   FiSend,
   FiArrowLeft
 } from 'react-icons/fi'
+
 import Header from '../components/Header'
 import api from '../services/api'
 import '../styles/filmeForm.css'
@@ -13,10 +14,10 @@ import '../styles/filmeForm.css'
 function EditarFilme() {
   const { id } = useParams()
   const navigate = useNavigate()
-
   const isAdmin = localStorage.getItem('isAdmin') === 'true'
 
   const [generos, setGeneros] = useState([])
+
   const [form, setForm] = useState({
     titulo: '',
     ano: '',
@@ -39,6 +40,73 @@ function EditarFilme() {
     })
   }
 
+  function formatarDuracao(valor) {
+    const numeros = valor.replace(/\D/g, '').slice(0, 4)
+
+    if (!numeros) return ''
+    if (numeros.length <= 2) return numeros
+
+    const horas = numeros.slice(0, numeros.length - 2).padStart(2, '0')
+    const minutos = numeros.slice(-2)
+
+    return `${horas}:${minutos}`
+  }
+
+  function duracaoParaTela(valor) {
+    if (!valor) return ''
+
+    const texto = String(valor)
+
+    if (texto.includes(':')) {
+      const partes = texto.split(':')
+      const horas = String(Number(partes[0]) || 0).padStart(2, '0')
+      const minutos = String(Number(partes[1]) || 0).padStart(2, '0')
+
+      return `${horas}:${minutos}`
+    }
+
+    return texto
+  }
+
+  function duracaoParaBackend(valor) {
+    if (!valor) return null
+
+    const texto = String(valor)
+
+    if (texto.includes(':')) {
+      const partes = texto.split(':')
+      const horas = String(Number(partes[0]) || 0).padStart(2, '0')
+      const minutos = String(Number(partes[1]) || 0).padStart(2, '0')
+
+      return `${horas}:${minutos}:00`
+    }
+
+    return `${String(valor).padStart(2, '0')}:00:00`
+  }
+
+  function duracaoParaTela(valor) {
+    if (!valor) return ''
+
+    if (valor.length >= 5) {
+      return valor.slice(0, 5)
+    }
+
+    return valor
+  }
+
+  function formatarOrcamento(valor) {
+    const numeros = String(valor).replace(/\D/g, '')
+
+    if (!numeros) return ''
+
+    return Number(numeros).toLocaleString('pt-BR')
+  }
+
+  function limparOrcamento(valor) {
+    const numeros = String(valor).replace(/\D/g, '')
+    return numeros || null
+  }
+
   async function carregarDados() {
     try {
       const [filmeResponse, generosResponse] = await Promise.all([
@@ -53,7 +121,7 @@ function EditarFilme() {
       setForm({
         titulo: filme.titulo || '',
         ano: filme.ano || '',
-        duracao: filme.duracao || '',
+        duracao: duracaoParaTela(filme.duracao || ''),
         linguagem: filme.linguagem_nome || '',
         produtora: filme.produtora_nome || '',
         genero: filme.genero || '',
@@ -61,7 +129,7 @@ function EditarFilme() {
         atores: filme.atores_nomes?.join(', ') || '',
         sinopse: filme.sinopse || '',
         poster: filme.poster || '',
-        orcamento: filme.orcamento || '',
+        orcamento: filme.orcamento ? formatarOrcamento(String(filme.orcamento)) : '',
         pais: filme.pais_nome || ''
       })
     } catch (error) {
@@ -73,13 +141,12 @@ function EditarFilme() {
     if (!nome) return null
 
     const response = await api.get(endpoint)
+
     const itemExistente = response.data.find(
       (item) => item.nome.toLowerCase() === nome.toLowerCase()
     )
 
-    if (itemExistente) {
-      return itemExistente.id
-    }
+    if (itemExistente) return itemExistente.id
 
     const novoItem = await api.post(endpoint, { nome })
     return novoItem.data.id
@@ -110,7 +177,7 @@ function EditarFilme() {
       duracao: form.duracao,
       sinopse: form.sinopse,
       poster: form.poster,
-      orcamento: form.orcamento || null,
+      orcamento: limparOrcamento(form.orcamento),
       genero: generoId,
       diretor: diretorId,
       produtora: produtoraId,
@@ -128,14 +195,15 @@ function EditarFilme() {
 
       await api.put(`filmes/${id}/`, dados)
 
-      if (isAdmin) {
-        alert('Filme atualizado com sucesso!')
-      } else {
-        alert('Solicitação de edição enviada para aprovação!')
-      }
+      alert(
+        isAdmin
+          ? 'Filme atualizado com sucesso!'
+          : 'Solicitação de edição enviada para aprovação!'
+      )
 
       navigate('/gerenciar')
     } catch (error) {
+      console.log('ERRO DO BACKEND:', error.response?.data)
       console.log(error)
       alert('Erro ao salvar alterações.')
     }
@@ -160,27 +228,6 @@ function EditarFilme() {
     carregarDados()
   }, [id])
 
-  function formatarDuracao(valor) {
-    const numeros = valor.replace(/\D/g, '').slice(0, 4)
-
-    if (numeros.length <= 2) {
-      return numeros
-    }
-
-    const horas = numeros.slice(0, 2)
-    const minutos = numeros.slice(2, 4)
-
-    return `${horas}:${minutos}:00`
-  }
-
-  function formatarOrcamento(valor) {
-    const numeros = valor.replace(/\D/g, '')
-
-    if (!numeros) return ''
-
-    return Number(numeros).toLocaleString('pt-BR')
-  }
-
   return (
     <div className="filme-form-page">
       <Header />
@@ -201,6 +248,7 @@ function EditarFilme() {
         <button
           className="form-top-button"
           onClick={() => navigate('/adicionar-filme')}
+          type="button"
         >
           {isAdmin ? '+ Adicionar Filme' : '+ Solicitar Adição'}
         </button>
@@ -238,7 +286,8 @@ function EditarFilme() {
                     duracao: formatarDuracao(e.target.value)
                   })
                 }
-                placeholder="01:40:00"
+                placeholder="01:33"
+                inputMode="numeric"
               />
             </div>
 

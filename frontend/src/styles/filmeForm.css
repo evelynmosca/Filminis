@@ -146,10 +146,11 @@
   background: #050505;
   border-radius: 24px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 150px;
-  margin-top: 41px; 
+  margin-top: 41px;
+  overflow: hidden;
+  padding: 0;
 }
 
 .poster-button {
